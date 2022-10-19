@@ -14,8 +14,9 @@ class Contenedor{
     }
     
     getAll(){
+
         try{
-            let content = fs.readFileSync('./articles.txt','utf-8')
+            const content = fs.readFileSync('./articles.txt','utf-8')
             return JSON.parse(content)
         }
         catch (err){
@@ -24,26 +25,41 @@ class Contenedor{
             }
     }}
 
+    //async getAllAsync(){
+    //    let result = undefined
+    //    try {
+    //        
+    //        let content =  JSON.parse(await fs.promises.readFile('./articles.txt','utf-8'))
+    //        result = content
+    //        //console.log(result)
+    //        return result
+    //    }
+    //    catch (err){
+    //        if (err == "Error: ENOENT: no such file or directory, open './articles.txt'"){
+    //            console.log("Error, no existe un archivo con ese nombre!")
+    //        }
+    //    }
+    //}
 
     getByID(number){
         let items = this.getAll()
-        
         try{
-            
+            let result = ""
             items.forEach(
                 element => {
-                    console.log(`iteration: ${element.id}`)
                     if (element.id == number){
-                        return element
+                        result = element 
                     }
             })
+            return result 
         }catch(err){
             console.log("error")
         }
     }
     deleteByID(number){
+        let items = this.getAll()
         try{
-            let items = this.getAll()
+            
             console.log(items)
             items.forEach(
                 element => {
@@ -57,8 +73,6 @@ class Contenedor{
         catch (err){
             console.log(err)
         }
-        
-
     }
     deleteAll(){
         this.save("")
@@ -80,9 +94,10 @@ class Contenedor{
         catch (err){
             console.log(err)
         }
-        }
+    }
     
 }
 
-let algo = new Contenedor("novritsch ssp 18", 500, "https://eu.novritsch.com/wp-content/uploads/2020/09/SSP18-Full-Kit-Silver-1024x721.jpg")
-algo.deleteByID(4)
+
+
+module.exports = Contenedor;
