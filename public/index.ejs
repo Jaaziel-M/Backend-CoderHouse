@@ -50,13 +50,6 @@
             </tr>
         </thead>
         <tbody id="table">
-            <!-- Listado prods 
-            <tr>
-                <td><%= item.nombre%></td>
-                <td><%= item.precio%></td>
-                <td><img src=<%= item.url.toString() %> width="25px" height="25px"/></td>
-            </tr>
-            -->
 
         </tbody>
     </table>
@@ -66,14 +59,14 @@
 
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label text-info">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <input type="email" class="form-control" id="mail" aria-describedby="emailHelp">
         </div>
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label text-info">Ingresá tu mensaje:</label>
             
             <input id="msg">
         </div>
-        
+
         <button onclick="sendChat()" class="btn btn-primary">Submit</button>
         <ul id="chat", class="text-info">
             

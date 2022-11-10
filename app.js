@@ -9,10 +9,9 @@ const app = express()
 const http = new HttpServer(app); //http necesita como parametro las funcionalidades que usaremos en app (express)
 const io = new ioServer(http); // Misma idea con socket IO 
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-//app.set('views', "./public");
-//app.set('view engine', 'ejs')
+
+app.set('views', "./public");
+app.set('view engine', 'ejs')
 //app.use(logger())
 let allmsgs = []
 let allprods = []
@@ -23,10 +22,10 @@ class Msg {
         this.ts = ts;
         this.msg = msg
     }
-    postMsg(text, arry){
+    postMsg(fullmsg, arry){
         let time = new Date();
-        let mail = "harcodedmail@algo.com"
-        let txt = text
+        let mail = fullmsg.mails;
+        let txt = fullmsg.messages;
         let mssg = new Msg(mail,time,txt)
         arry.push(mssg)
     }
@@ -40,8 +39,8 @@ app.get('/health', (_req,res) => {
     
 })
 app.get('/',(_req,res)=>{
-    res.sendFile('index.html',{root: __dirname}) // con el root declaramos la ruta absoluta entonces SI ejecutamos este archivo node, siempre buscará a Index en el directorio public/index de esta carpeta
-    
+    //res.sendFile('index.html',{root: __dirname}) // con el root declaramos la ruta absoluta entonces SI ejecutamos este archivo node, siempre buscará a Index en el directorio public/index de esta carpeta
+    res.render('index.ejs')
 })
 
 io.on('connection', socket => {

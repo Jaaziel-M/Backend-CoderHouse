@@ -16,13 +16,17 @@ function updateChat(messages){
 
 // envío un nuevo mensaje
 function sendChat(){
+
     let msg = document.querySelector('#msg').value;
-    if(msg == ''){console.log("entró en el if");return}
-    console.log(msg)
-    socket.emit('NEW_MSG_USR', msg)
-    
-    //console.log(msg)
-    document.querySelector('#msg').value = '';
+    let mail = document.querySelector('#mail').value;
+    let fullmsg = {messages: msg, mails: mail}
+    if(mail == ''){
+        alert("Para poder chatear necesitas ingresar un mail!")
+    }else{
+        if(msg == ''){console.log("entró en el if");return}
+        socket.emit('NEW_MSG_USR', fullmsg)
+        document.querySelector('#msg').value = '';
+    }
 }
 
 
