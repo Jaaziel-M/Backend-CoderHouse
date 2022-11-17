@@ -1,7 +1,6 @@
 const express = require('express');
 const productos = express()
 const fs = require('fs');
-const { isObject } = require('util');
 const {v4 : uuidv4} = require('uuid')
 productos.use(express.json());
 productos.use(express.urlencoded({extended:true}));
@@ -18,6 +17,8 @@ class Products{
         this.timestamp = Date.now();
     }
 }
+
+
 
 let Prods = async (option, parameter, search) => {
     switch(option){
@@ -103,15 +104,8 @@ let Prods = async (option, parameter, search) => {
 
 productos.get('/',(req_,res)=>{
     Prods("readOnly").then(prodList => {
-        //let prodList = data
         try {
-                let allProds = ''
-                prodList.forEach(element => {
-                    allProds = allProds+`<img src=${element.url}><h2>${element.price}</h2>`
-                })
-                res.send(
-                    allProds
-                )
+                res.send(prodList)
         }   
         catch(err){
             res.send(`<h1>nope</h1><p>${err}</p>`)
@@ -135,11 +129,12 @@ productos.get('/:id',(req,res)=>{
 productos.post('/',(req,res)=>{
     const { body } = req;
     let newProd = new Products(body.title, body.price, body.url, body.stock, body.descripcion)
-    res.send(`<h1>NUEVO PRODUCTO AGREGADO</h1><img src=${newProd.url.toString()}><h2>${newProd.price}</h2>`)
-
     Prods("readAndUpdate", JSON.stringify(newProd),null).then(prodList => {
         try {
-            console.log(prodList)
+            console.log(newProd.title)
+            //Para probar con postman por favor sacar los // en res.send(prodList) y colocarlos en res.redirect('/')
+            //res.send(prodList)
+            res.redirect('/')
         }   
         catch(err){
             res.send(`<h1>nope</h1><p>${err}</p>`)
@@ -169,17 +164,19 @@ productos.delete('/:id',(req,res)=>{
     const query = req.params.id;
     Prods("SearchAndDelete",null,query).then(prodList => {
         try {
-            console.log(prodList)
+            console.log(`query received ${query}`)
+            //Para probar con postman por favor sacar los // en res.send(prodList) y colocarlos en res.redirect('/')
+            //res.send(prodList)
+            res.redirect('/')
         }   
         catch(err){
-            res.send(`<h1>nope</h1><p>${err}</p>`)
+            res.send(`<h1>nope callback del delete</h1><p>${err}</p>`)
         }
     })
 })
 
-//module.exports = productos;
-//module.exports = Prods;
 module.exports = {
     productos: productos,
-    Prods: Prods
+    Prods: Prods,
+    ProductsClass: Products
 };

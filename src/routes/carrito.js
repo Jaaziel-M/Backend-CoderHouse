@@ -202,9 +202,6 @@ carrito.post('/:id_prod/productos/:id_carro',(req,res)=>{
             }
         })
     });
-    
-
-
 })
 // Eliminar un producto del carrito por su id de carrito y de producto
 carrito.delete('/:id_prod/productos/:id_carro',(req,res)=>{
@@ -214,9 +211,12 @@ carrito.delete('/:id_prod/productos/:id_carro',(req,res)=>{
         try {
             console.log(kartList)
         } catch (err) {
-            return err
+            res.send(`<h1>nope callback del delete</h1><p>${err}</p>`)
         }
     })
 })
 
-module.exports = carrito;
+module.exports = {
+    carrito: carrito,
+    CarritoClass: Carrito
+};

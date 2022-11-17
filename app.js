@@ -8,6 +8,8 @@ app.use(express.urlencoded({extended:true}));
 app.set('views','./views');
 app.use(express.static('./view'));
 
+
+
 app.get('/healthcheck',(req_,res)=>{
     try{
         res.status(200).json({
@@ -16,7 +18,7 @@ app.get('/healthcheck',(req_,res)=>{
         })
     }
     catch(err){
-        // acá va el Mware
+        res.send(`<h1>nope</h1><p>${err}</p>`)
     }
 })
 app.use('/', indexRoute)
