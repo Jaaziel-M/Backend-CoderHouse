@@ -61,11 +61,9 @@ function sendProd(){
 }
 
 socket.on('NEW_PROD_FROM_BACK', dataProdRecibidaDelBack => {
-    
     updateProd(dataProdRecibidaDelBack)
 } )
 socket.on('UPDATE_PROD_FROM_USR', ProdsArry => {
-    //ProdsArry.forEach(element => {})
     updateProd(ProdsArry)
     
 })
