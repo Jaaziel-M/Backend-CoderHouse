@@ -108,7 +108,7 @@ router.delete('/api/db/',(req,res)=>{
 
 // METODOS RELACIONADOS CON EL CRUD DE LOS CARRITOS 
 
-// MUESTRO LOS CARRITOS (NECESITA PARAMETROS DESDE LA URL PARA PAGINADO)
+// MUESTRO LOS CARRITOS 
 router.get('/api/db/carrito',(req,res)=>{
     const {page, limit} = req.query
     try{
@@ -148,9 +148,9 @@ router.post('/api/db/carrito',(req,res)=>{
     }
 })
 
-// Vacía un carrito y lo elimina.
+// Vacía un carrito y lo elimina.  el parametro se pasa por query en url
 router.delete('/api/db/carrito/:id',(req,res)=>{
-    const {id} = req.query
+    const {id} = req.params
     try{
         KartSvc.then(data => {
             data.deleteKartById(id).then(data => {
@@ -163,9 +163,9 @@ router.delete('/api/db/carrito/:id',(req,res)=>{
     }
 })
 
-// Me permite listar todos los productos guardados en el carrito
+// Me permite listar todos los productos guardados en el carrito. El parametro se pasa por url
 router.get('/api/db/carrito/:id',(req,res)=>{
-    const {id} = req.query
+    const {id} = req.params
     try{
         KartSvc.then(data => {
             data.getProdsfromKart(id).then(data => {
@@ -178,7 +178,7 @@ router.get('/api/db/carrito/:id',(req,res)=>{
     }
 })
 
-// Para incorporar productos al carrito por su id de producto
+// Para incorporar productos al carrito por su id de producto. El parametro se pasa por url
 router.post('/api/db/carrito/:id_kart/prod/:id_prod',(req,res)=>{
     const id_kart = req.params.id_kart
     const id_prod = req.params.id_prod
