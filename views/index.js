@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const {carrito, CarritoClass} = require('../src/routes/carrito')
 const {productos, ProductsClass} = require('../src/routes/productos')
-const ProdSvc = require('../src/index')
+const {ProdSvc, KartSvc} = require('../src/index')
 const fs = require('fs');
-
+const {v4: uuidv4} = require('uuid')
+router.use(express.urlencoded({extended:true}));
 
 
 
@@ -20,6 +21,7 @@ const GetDataCrr = async () => {
 }
 
 
+// METODOS RELACIONADOS CON EL CRUD DE LOS PRODUCTOS 
 
 router.get('',(req_,res)=>{
     
@@ -77,7 +79,7 @@ router.put('/api/db/',(req,res)=>{
     bodyparsed = JSON.parse(JSON.stringify(body))
     try{
         ProdSvc.then(data => {
-            data.updateById(bodyparsed).then(data => {
+            data.updateProdById(bodyparsed).then(data => {
                 res.json(data)
             })
         })
@@ -93,7 +95,7 @@ router.delete('/api/db/',(req,res)=>{
     const { body } = req
     try{
         ProdSvc.then(data => {
-            data.deleteById(body).then(data => {
+            data.deleteProdById(body).then(data => {
                 res.json(data)
             })
         })
@@ -103,8 +105,114 @@ router.delete('/api/db/',(req,res)=>{
     }
 })
 
-router.use('/api/productos',productos)
-router.use('/api/carrito', carrito)
+
+// METODOS RELACIONADOS CON EL CRUD DE LOS CARRITOS 
+
+// MUESTRO LOS CARRITOS (NECESITA PARAMETROS DESDE LA URL PARA PAGINADO)
+router.get('/api/db/carrito',(req,res)=>{
+    const {page, limit} = req.query
+    try{
+        KartSvc.then(data => {
+            data.getAllKarts(page,limit).then(data => {
+                res.json(data)
+            })
+        })
+        
+
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+// Crea un carrito y devuelve su id.
+router.post('/api/db/carrito',(req,res)=>{
+    const { body } = req
+    Object.assign(body, {
+        id_cart: uuidv4(),
+        timestamp: parseInt(Date.now())
+    })
+    body.productos.forEach(element => {
+        Object.assign(element, {timestamp: parseInt(Date.now())})
+    });
+    bodyparsed = JSON.parse(JSON.stringify(body))
+    try{
+        KartSvc.then(data => {
+            data.createOneKart(bodyparsed).then(data => {
+                res.json(data)
+            })
+        })
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+// Vacía un carrito y lo elimina.
+router.delete('/api/db/carrito/:id',(req,res)=>{
+    const {id} = req.query
+    try{
+        KartSvc.then(data => {
+            data.deleteKartById(id).then(data => {
+                res.json(data)
+            })
+        })
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+// Me permite listar todos los productos guardados en el carrito
+router.get('/api/db/carrito/:id',(req,res)=>{
+    const {id} = req.query
+    try{
+        KartSvc.then(data => {
+            data.getProdsfromKart(id).then(data => {
+                res.json(data)
+            })
+        })
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+// Para incorporar productos al carrito por su id de producto
+router.post('/api/db/carrito/:id_kart/prod/:id_prod',(req,res)=>{
+    const id_kart = req.params.id_kart
+    const id_prod = req.params.id_prod
+    try{
+        KartSvc.then(data => {
+            data.addToKartById(id_kart, id_prod).then(data => {
+                res.json(data)
+            })
+        })
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+// Eliminar un producto del carrito por su id de carrito y de producto
+router.delete('/api/db/carrito/:id_kart/prod/:id_prod',(req,res)=>{
+    const id_kart = req.params.id_kart
+    const id_prod = req.params.id_prod
+    try{
+        KartSvc.then(data => {
+            data.deleteFromKartById(id_kart, id_prod).then(data => {
+                res.json(data)
+            })
+        })
+    }
+    catch(err){
+        res.send(`<h1>nope</h1><p>${err}</p>`)
+    }
+})
+
+
+router.use('/api/local/productos',productos)
+router.use('/api/local/carrito', carrito)
 
 
 module.exports = router;

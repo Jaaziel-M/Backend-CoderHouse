@@ -1,5 +1,5 @@
 const admin = require("firebase-admin")
-
+const {v4: uuidv4} = require('uuid')
 class ContainerFirebase {
     constructor(db, query){
         this.db = db;
@@ -46,7 +46,7 @@ class ContainerFirebase {
             
         }
     }
-    async updateById(bodyFromPage){
+    async updateProdById(bodyFromPage){
         try {
             const id = bodyFromPage.id;
             let doc = this.query.doc(id)
@@ -65,7 +65,7 @@ class ContainerFirebase {
             throw new Error(error)
         }
     }
-    async deleteById(id){
+    async deleteProdById(id){
         try {
             console.log(id)
             let doc = this.query.doc(id.id)
