@@ -13,14 +13,6 @@ const productsSchema = new Schema({
     url: {
         type: String,
         required: true
-    },
-    stock: {
-        type: Number,
-        required: true
-    },
-    descripcion: {
-        type: String,
-        required: true
     }
 })
 

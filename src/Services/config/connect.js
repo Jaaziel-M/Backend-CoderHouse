@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const CONNECT = async () => {
@@ -8,7 +7,7 @@ const CONNECT = async () => {
         //MONGO_URI =  `mongodb://localhost:27017/ecommerce`
         MONGO_URI =  `mongodb://127.0.0.1:27017/ecommerce`
     }else{
-        MONGO_URI = `mongodb+srv://${MONGO_USER}:${process.env.MONGO_PASS}@cluster0.biltcc2.mongodb.net/?retryWrites=true&w=majority` ;
+        MONGO_URI = `mongodb+srv://${MONGO_USER}:${process.env.MONGO_PASS}@cluster0.biltcc2.mongodb.net/?retryWrites=true&w=majority`;
     }
     
     console.log(MONGO_URI)
