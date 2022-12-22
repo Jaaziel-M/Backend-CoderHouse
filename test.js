@@ -23,7 +23,7 @@ dataToNormalize = {id: 999, users:[
         nombre: "mariaelena",
         apellido: "fuseneco",
         edad: "43",
-        alias: "Viejachota01",
+        alias: "MariFuseneco01",
         avatar: "url"
     }
 ], chats:[
@@ -46,7 +46,7 @@ dataToNormalize = {id: 999, users:[
                 nombre: "mariaelena",
                 apellido: "fuseneco",
                 edad: "43",
-                alias: "Viejachota01",
+                alias: "MariFuseneco01",
                 avatar: "url"
             },
             text: "viejo verde"
@@ -70,7 +70,7 @@ dataToNormalize = {id: 999, users:[
                 nombre: "mariaelena",
                 apellido: "fuseneco",
                 edad: "43",
-                alias: "Viejachota01",
+                alias: "MariFuseneco01",
                 avatar: "url"
             },
             text: "Bigote careta"

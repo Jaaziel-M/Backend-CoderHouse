@@ -11,7 +11,7 @@ class ChatContainer{
     async getAllMsg() {
         let chats = await modelChat.find()
         return chats;
-    }/*
+    }
     async addMsg(bodyFromPage) {
             const data = {
                 message: bodyFromPage.messages, 
@@ -26,11 +26,8 @@ class ChatContainer{
             const SaveModel = new modelChat(data);
             const SavedModel = await SaveModel.save();
             return SavedModel;
-    }*/
-//  test con normalizacion 
-    // GENERAR UN MODELO PARA USUARIOS Y OTRO PARA MENSAJES
+    }
 
-//  end test 
 
     async updateProdById(bodyFromPage){
             const data = {
