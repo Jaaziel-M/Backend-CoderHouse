@@ -1,67 +1,59 @@
-// Importo las dependencias al codigo
 const express = require('express');
-const {Server: HttpServer} = require('http');
-const {Server: ioServer} = require('socket.io');
-require('dotenv').config();
-const {v4 : uuidv4} = require('uuid');
-const ChatContainer = require('./src/Containers/containerChats');
-const ProdContainer = require('./src/Containers/containerProds');
-// Creo clases para utilizar metodos y llamo a metodos de las librerías importadas
+const session = require('express-session')
+const cookieParser = require('cookie-parser');
+//const { application } = require('express');
 const app = express()
-const http = new HttpServer(app); //http necesita como parametro las funcionalidades que usaremos en app (express)
-const io = new ioServer(http); // Misma idea con socket IO 
 
+app.use(express.json());
+require('dotenv').config();
 
+const COOKIE_SECRET = process.env.COOKIE_SECRET
+app.use(cookieParser(COOKIE_SECRET))
 
-app.set('views', "./public");
-app.set('view engine', 'ejs')
-let allmsgs = []
-let allprods = []
-app.use(express.static('public'))
-
-Chat = new ChatContainer()
-Prod = new ProdContainer()
-
-app.get('/health', (_req,res) => {
-    res.status(200).json({
-        "success": true,
-        "health": "yes"
-    })
-    
-})
+app.use(session({
+    secret: 'secreto',
+    resave: true,
+    saveUninitialized: true
+}))
 
 app.get('/',(_req,res)=>{
-    res.render('index.ejs')
+    res.status(200).json({
+        "success":true,
+        "health":"yes" 
+    })
 })
 
-io.on('connection', socket => {
-    // SOCKETS BACK CHAT
 
-    Chat.getAllMsg().then(data => {
-        socket.emit('UPDATE_FROM_USR', data)
-    })
-    
-    socket.on('NEW_MSG_USR', dataChatFromFront => {
-        dataChatFromFront
-        Chat.addMsg(dataChatFromFront).then(data => {
-            Chat.getAllMsg().then(data => {
-                io.sockets.emit('NEW_MSG_FROM_BACK',data)
-            })
+
+app.post('/login',(req,res)=>{
+    const {usr, pss} = req.body;
+    const usuario = "admin";
+    const password = "pass";
+    // solo pongo el caso exitoso estoy probando nomas! 
+    console.log(req.body)
+    if (usuario == usr && password == pss){
+        res.cookie('SessionTime','expiration',{ maxAge: 5000, signed: true });
+        return res.status(200).json({
+            "success": true,
+            "message":"Te logueaste!"
         })
-    })
-    // SOCKETS BACK PRODUCTOS
-    //const allPrd = new DbCall('products')
-    //Prod.getAllProds().then(data => {
-    //    socket.emit('UPDATE_PROD_FROM_USR', data)
-    //})
-    //socket.on('NEW_PROD_USR', dataProdFromFront => {
-    //    allPrd.uploadtoDB(dataProdFromFront).then(data => {
-    //        allPrd.getAllFromDB().then(data => {
-    //            io.sockets.emit('NEW_PROD_FROM_BACK',data)
-    //        })
-    //    })
-    //})
+    }
 })
 
-module.exports = http;
+app.get('/show',(req,res)=>{
+    //if(req.signedCookies.SessionTime){
+    //    res.status(200).json({
+    //        "success":false,
+    //        "message":"Seguís logueado maquinola!"
+    //    })
+    //}
+    //if(!req.signedCookies.SessionTime){
+    //    res.status(200).json({
+    //        "success":false,
+    //        "message":"La sesión expiró titan! logueate nuevamente!"
+    //    })
+    //}
+    
+})
 
+module.exports = app;
