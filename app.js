@@ -41,18 +41,18 @@ app.post('/login',(req,res)=>{
 })
 
 app.get('/show',(req,res)=>{
-    //if(req.signedCookies.SessionTime){
-    //    res.status(200).json({
-    //        "success":false,
-    //        "message":"Seguís logueado maquinola!"
-    //    })
-    //}
-    //if(!req.signedCookies.SessionTime){
-    //    res.status(200).json({
-    //        "success":false,
-    //        "message":"La sesión expiró titan! logueate nuevamente!"
-    //    })
-    //}
+    if(req.signedCookies.SessionTime){
+        res.status(200).json({
+            "success":false,
+            "message":"Seguís logueado maquinola!"
+        })
+    }
+    if(!req.signedCookies.SessionTime){
+        res.status(200).json({
+            "success":false,
+            "message":"La sesión expiró titan! logueate nuevamente!"
+        })
+    }
     
 })
 
