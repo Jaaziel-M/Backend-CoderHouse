@@ -6,18 +6,31 @@ require('dotenv').config();
 const {v4 : uuidv4} = require('uuid');
 const ChatContainer = require('./src/Containers/containerChats');
 const ProdContainer = require('./src/Containers/containerProds');
+const login = require('./routes/login')
+const logout = require('./routes/logout')
 // Creo clases para utilizar metodos y llamo a metodos de las librerías importadas
 const app = express()
 const http = new HttpServer(app); //http necesita como parametro las funcionalidades que usaremos en app (express)
 const io = new ioServer(http); // Misma idea con socket IO 
+const cookieParser = require('cookie-parser')
+const session = require('express-session');
+const COOKIE_SECRET = process.env.COOKIE_SECRET
 
 
+app.use(cookieParser(COOKIE_SECRET))
+app.use(session({
+    secret: 'secreto',
+    resave: true,
+    saveUninitialized: true
+}))
+app.use(cookieParser(COOKIE_SECRET))
 
 app.set('views', "./public");
 app.set('view engine', 'ejs')
 let allmsgs = []
 let allprods = []
 app.use(express.static('public'))
+app.use('/login',login)
 
 Chat = new ChatContainer()
 Prod = new ProdContainer()
@@ -30,8 +43,16 @@ app.get('/health', (_req,res) => {
     
 })
 
-app.get('/',(_req,res)=>{
-    res.render('index.ejs')
+app.get('/',(req,res)=>{
+    if(req.signedCookies.username){
+        const username = req.signedCookies.username
+        return res.render('index.ejs',{username})
+    }
+    return req.session.destroy(error => {
+        if(!error){
+            res.redirect('/login')
+        }
+    })
 })
 
 io.on('connection', socket => {
@@ -63,5 +84,5 @@ io.on('connection', socket => {
     //})
 })
 
-module.exports = http;
+module.exports = app;
 

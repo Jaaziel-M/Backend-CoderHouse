@@ -1,6 +1,5 @@
 // JS utilizado por el front 
 const socket = io();
-
 /////////////////////  SOCKET CHAT /////////////////////
 // imprimo todo el historial
 function updateChat(messages){
@@ -71,7 +70,5 @@ socket.on('NEW_PROD_FROM_BACK', dataProdRecibidaDelBack => {
 } )
 socket.on('UPDATE_PROD_FROM_USR', ProdsArry => {
     updateProd(ProdsArry)
-    
 })
-
 
