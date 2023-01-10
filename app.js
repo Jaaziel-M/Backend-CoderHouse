@@ -7,23 +7,26 @@ const {v4 : uuidv4} = require('uuid');
 const ChatContainer = require('./src/Containers/containerChats');
 const ProdContainer = require('./src/Containers/containerProds');
 const login = require('./routes/login')
-const logout = require('./routes/logout')
-// Creo clases para utilizar metodos y llamo a metodos de las librerías importadas
+//const logout = require('./routes/logout')
 const app = express()
-const http = new HttpServer(app); //http necesita como parametro las funcionalidades que usaremos en app (express)
-const io = new ioServer(http); // Misma idea con socket IO 
+const http = new HttpServer(app); 
+const io = new ioServer(http); 
 const cookieParser = require('cookie-parser')
 const session = require('express-session');
 const COOKIE_SECRET = process.env.COOKIE_SECRET
 
-
+const MongoStore = require('connect-mongo')
 app.use(cookieParser(COOKIE_SECRET))
 app.use(session({
-    secret: 'secreto',
-    resave: true,
-    saveUninitialized: true
-}))
-app.use(cookieParser(COOKIE_SECRET))
+    store: MongoStore.create({
+        mongoUrl: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@ac-oxnem7u-shard-00-00.biltcc2.mongodb.net:27017,ac-oxnem7u-shard-00-01.biltcc2.mongodb.net:27017,ac-oxnem7u-shard-00-02.biltcc2.mongodb.net:27017/?ssl=true&replicaSet=atlas-14mqtq-shard-0&authSource=admin&retryWrites=true&w=majority`,
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true }
+    },
+    {
+    secret: COOKIE_SECRET,
+    resave: false,
+    saveUninitialized: false
+    })}))
 
 app.set('views', "./public");
 app.set('view engine', 'ejs')
@@ -44,16 +47,27 @@ app.get('/health', (_req,res) => {
 })
 
 app.get('/',(req,res)=>{
-    if(req.signedCookies.username){
-        const username = req.signedCookies.username
+    const username = req.signedCookies.username
+    if(req.signedCookies.username != undefined){
         return res.render('index.ejs',{username})
     }
-    return req.session.destroy(error => {
+    req.session.destroy(error => {
         if(!error){
-            res.redirect('/login')
+            
+            return res.redirect('/login')
         }
     })
 })
+app.get('/logout',(req,res)=>{
+    const username = req.signedCookies.username
+    
+    return req.session.destroy(error => {
+        if(!error){
+            return res.cookie('username',username,{ maxAge: 0, signed: true }).render('logout.ejs',{username})
+        } 
+    })
+})
+
 
 io.on('connection', socket => {
     // SOCKETS BACK CHAT
