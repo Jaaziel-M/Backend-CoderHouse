@@ -10,8 +10,6 @@ const CONNECT = async () => {
         MONGO_URI = `mongodb+srv://${MONGO_USER}:${process.env.MONGO_PASS}@cluster0.biltcc2.mongodb.net/?retryWrites=true&w=majority`;
     }
     
-    console.log(MONGO_URI)
-
     try {
         await mongoose.connect(MONGO_URI, {
             useNewUrlParser: true,
@@ -22,7 +20,5 @@ const CONNECT = async () => {
         throw new Error(error)
     }
 }
-
-
 
 module.exports = CONNECT;

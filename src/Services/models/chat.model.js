@@ -3,20 +3,6 @@ const Schema = mongoose.Schema;
 
 const messageSchema = new Schema({
 
-    /*
-    entities: {
-        usuarios: {type: Array, required: true},
-        all: {
-            {type: Array, required: true}
-        }
-
-    },
-    result: {
-        type: String,
-        required: true
-    }
-    */
-
             id: {
                 type: String,
                 required: true

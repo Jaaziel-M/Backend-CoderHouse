@@ -13,12 +13,19 @@
     <form class="container text-center text-info" method="post">
         <h1 >Log in</h1>
         <div class="mb-3">
-            <label  class="form-label">Ingresá tu nombre:</label>
-            <input type="text" class="form-control" id="username" aria-describedby="emailHelp" name="username">
+            <label  class="form-label">Mail:</label>
+            <input type="email" class="form-control" id="mail" name="mail" aria-describedby="emailHelp" name="username">
         </div>
         
-        <button action="submit" class="btn btn-primary">Submit</button>
+        <div class="mb-3">
+            <label  class="form-label">Contraseña:</label>
+            <input type="password" class="form-control" name="password" id="password" aria-describedby="emailHelp" name="username">
+        </div>
+        
+        
+        <button action="submit" class="btn btn-primary">Entrar</button>
     </form>
-    
+    <form action="/signin" method="get" class="container text-center text-info"><button action="/signin" class="btn btn-primary">Registrarse</button></form>
+
 </body>
 </html>

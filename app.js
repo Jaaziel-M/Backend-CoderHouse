@@ -7,6 +7,7 @@ const {v4 : uuidv4} = require('uuid');
 const ChatContainer = require('./src/Containers/containerChats');
 const ProdContainer = require('./src/Containers/containerProds');
 const login = require('./routes/login')
+const signIn = require('./routes/signIn')
 //const logout = require('./routes/logout')
 const app = express()
 const http = new HttpServer(app); 
@@ -14,8 +15,10 @@ const io = new ioServer(http);
 const cookieParser = require('cookie-parser')
 const session = require('express-session');
 const COOKIE_SECRET = process.env.COOKIE_SECRET
-
-const MongoStore = require('connect-mongo')
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const MongoStore = require('connect-mongo');
+const { Strategy } = require('passport-local');
 app.use(cookieParser(COOKIE_SECRET))
 app.use(session({
     store: MongoStore.create({
@@ -34,9 +37,50 @@ let allmsgs = []
 let allprods = []
 app.use(express.static('public'))
 app.use('/login',login)
-
+app.use('/signin',signIn)
 Chat = new ChatContainer()
 Prod = new ProdContainer()
+
+////////////PASSPORT 
+router.use(passport.initialize());
+router.use(passport.session());
+passport.use('login', new LocalStrategy(async (email, password, done) => {
+    //      TRAIGO EL USUARIO DESDE MONGO
+    const userData = await modelAuth.findOne({ email, password: md5(password) })
+    if (!userData) {
+        // DONE ES EL CALLBACK
+        return done(null, false);
+    }
+    done(null, userData)
+}))
+
+passport.use('signup', new LocalStrategy({
+    passReqToCallback: true
+}, async (req, username, password, mail, done) => {
+    const userData = await modelAuth.findOne({ username, password: md5(password) })
+    if (userData) {
+        return done(null, false)
+    }
+    const stageUser = new UserModel({
+        nombre: username,
+        email: mail,
+        password: md5(password)
+    });
+    const newUser = await stageUser.save();
+    done(null, newUser)
+}
+
+));
+
+passport.serializeUser((user, done)=>{
+    done(null, user._id);
+})
+passport.deserializeUser(async (id, done)=>{
+    const useData = await UserModel.findById(id);
+    done(null,userData);
+})
+/////////////////////
+
 
 app.get('/health', (_req,res) => {
     res.status(200).json({
@@ -58,16 +102,25 @@ app.get('/',(req,res)=>{
         }
     })
 })
+//app.get('/logout',(req,res)=>{
+//    const username = req.signedCookies.username
+//    
+//    return req.session.destroy(error => {
+//        if(!error){
+//            return res.cookie('username',username,{ maxAge: 0, signed: true }).render('logout.ejs',{username})
+//        } 
+//    })
+//})
 app.get('/logout',(req,res)=>{
-    const username = req.signedCookies.username
-    
-    return req.session.destroy(error => {
-        if(!error){
-            return res.cookie('username',username,{ maxAge: 0, signed: true }).render('logout.ejs',{username})
-        } 
+    req.logout(()=> {
+        res.redirect('/login');
     })
 })
 
+app.get('/signin',(req,res)=>{
+    // if con res.redirect.isAuth para proteger rutas
+    res.redirect('/signin')
+})
 
 io.on('connection', socket => {
     // SOCKETS BACK CHAT
