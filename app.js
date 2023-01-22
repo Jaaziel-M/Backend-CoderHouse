@@ -1,59 +1,46 @@
+// Importo las dependencias al codigo
 const express = require('express');
-const session = require('express-session')
-const cookieParser = require('cookie-parser');
-//const { application } = require('express');
-const app = express()
-
-app.use(express.json());
 require('dotenv').config();
-
+const {v4 : uuidv4} = require('uuid');
+const app = express()
+const cookieParser = require('cookie-parser')
+const session = require('express-session');
 const COOKIE_SECRET = process.env.COOKIE_SECRET
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const MongoStore = require('connect-mongo');
+const { Strategy } = require('passport-local');
+// Routes
+const error = require('./src/routes/error')
+const home = require('./src/routes/home')
+const login = require('./src/routes/login')
+const signin = require('./src/routes/signin')
+//
 app.use(cookieParser(COOKIE_SECRET))
 
-app.use(session({
-    secret: 'secreto',
-    resave: true,
-    saveUninitialized: true
-}))
+//  Route to views folder and ejs files
+app.set('views', "./public");
+app.set('view engine', 'ejs')
+app.use(express.static('public'))
 
-app.get('/',(_req,res)=>{
+//  Use to get all the routes
+app.use('/error', error)
+app.use('/home', home)
+app.use('/signin', signin)
+app.use('/login', login)
+
+app.get('/health', (_req,res) => {
     res.status(200).json({
-        "success":true,
-        "health":"yes" 
+        "success": true,
+        "health": "yes"
     })
 })
 
-
-
-app.post('/login',(req,res)=>{
-    const {usr, pss} = req.body;
-    const usuario = "admin";
-    const password = "pass";
-    // solo pongo el caso exitoso estoy probando nomas! 
-    console.log(req.body)
-    if (usuario == usr && password == pss){
-        res.cookie('SessionTime','expiration',{ maxAge: 5000, signed: true });
-        return res.status(200).json({
-            "success": true,
-            "message":"Te logueaste!"
-        })
-    }
-})
-
-app.get('/show',(req,res)=>{
-    if(req.signedCookies.SessionTime){
-        res.status(200).json({
-            "success":false,
-            "message":"Seguís logueado maquinola!"
-        })
-    }
-    if(!req.signedCookies.SessionTime){
-        res.status(200).json({
-            "success":false,
-            "message":"La sesión expiró titan! logueate nuevamente!"
-        })
-    }
-    
-})
+//  get to all our routes
+app.get('/error', (req,res)=>{res.redirect('/error')})
+app.get('/home', (req,res)=>{res.redirect('/home')})
+app.get('/login', (req,res)=>{res.redirect('/login')})
+app.get('/signin', (req,res)=>{res.redirect('/signin')})
 
 module.exports = app;
+
