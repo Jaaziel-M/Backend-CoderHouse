@@ -8,7 +8,6 @@ const ChatContainer = require('./src/Containers/containerChats');
 const ProdContainer = require('./src/Containers/containerProds');
 const login = require('./routes/login')
 const signIn = require('./routes/signIn')
-//const logout = require('./routes/logout')
 const app = express()
 const http = new HttpServer(app); 
 const io = new ioServer(http); 
@@ -19,6 +18,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const MongoStore = require('connect-mongo');
 const { Strategy } = require('passport-local');
+const info = require('./routes/info');
+const random = require('./routes/random')
 app.use(cookieParser(COOKIE_SECRET))
 app.use(session({
     store: MongoStore.create({
@@ -38,6 +39,9 @@ let allprods = []
 app.use(express.static('public'))
 app.use('/login',login)
 app.use('/signin',signIn)
+app.use('/info',info)
+app.use('/random',random)
+
 Chat = new ChatContainer()
 Prod = new ProdContainer()
 
