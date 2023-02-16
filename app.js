@@ -20,6 +20,10 @@ const MongoStore = require('connect-mongo');
 const { Strategy } = require('passport-local');
 const info = require('./routes/info');
 const random = require('./routes/random')
+const compression = require('compression')
+const logger = require('pino')('./logs.log')
+
+app.use(compression())
 app.use(cookieParser(COOKIE_SECRET))
 app.use(session({
     store: MongoStore.create({
@@ -87,6 +91,7 @@ passport.deserializeUser(async (id, done)=>{
 
 
 app.get('/health', (_req,res) => {
+    logger.info("GET - /health - 200")
     res.status(200).json({
         "success": true,
         "health": "yes"
@@ -95,6 +100,7 @@ app.get('/health', (_req,res) => {
 })
 
 app.get('/',(req,res)=>{
+    logger.info("GET - / - 200")
     const username = req.signedCookies.username
     if(req.signedCookies.username != undefined){
         return res.render('index.ejs',{username})
@@ -116,12 +122,14 @@ app.get('/',(req,res)=>{
 //    })
 //})
 app.get('/logout',(req,res)=>{
+    logger.info("GET - /logout - 200")
     req.logout(()=> {
         res.redirect('/login');
     })
 })
 
 app.get('/signin',(req,res)=>{
+    logger.info("GET - /signin - 200")
     // if con res.redirect.isAuth para proteger rutas
     res.redirect('/signin')
 })
