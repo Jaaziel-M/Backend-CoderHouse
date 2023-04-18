@@ -21,6 +21,7 @@ router.get('/',(req,res)=>{
 
 router.post('/',passport.authenticate('signin',{failureRedirect: '/errorSignin'}),async (req,res)=>{
     res.cookie("username",req.body.username,"mail",req.body.mail,{signed: true}).redirect('/home')
+    
 })
 
 

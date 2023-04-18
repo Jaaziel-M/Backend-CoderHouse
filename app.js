@@ -90,11 +90,7 @@ app.get('/',(req,res)=>{
     })
 })
 
-app.get('/logout',(req,res)=>{
-    req.logout(()=> {
-        res.redirect('/login');
-    })
-})
+
 
 app.get('/signin',(req,res)=>{
     // if con res.redirect.isAuth para proteger rutas
@@ -109,8 +105,45 @@ app.get('/login',(req,res)=>{
 
 ////////////PASSPORT 
 
-passport.use('login', new LocalStrategy(async (mail, password, done) => {
+passport.use('signin', new LocalStrategy({passReqToCallback: true}, async (req, username, password, done) => {
+    const userData = await modelAuth.findOne({username, password: md5(toString(password)) })
+    if (userData) {
+        return done(null, false);
+    }
+    
+    const stageUser = new modelAuth({
+        nombre: username,
+        email: req.body.mail,
+        password: md5(password),
+        direccion: req.body.direccion,
+        dirNum: req.body.direccionNum,
+        edad: req.body.edad,
+        tel: req.body.tel,
+        url: req.body.url
+    });
+    const newUser = await stageUser.save();
+    //  mail functionality
+    //try {
+    //    mail.sendMail(
+    //        {
+    //            from : 'Airsoft shop account',
+    //            to : toString(mail),
+    //            subject : 'Bienvenido/a a  Airsoft shop!',
+    //            html : `<h1>Hola!</h1><h2>Gracias por crearte una cuenta, te dejamos //los datos ingresados a continuacion:</h2><h3>Nombre: ${username}<///h3>Dirección: ${direccion}<h3>Edad: ${edad}</h3>Telefono de contacto: //${tel}<h3>Foto: ${url}</h3><h4>Gracias por elegirnos! </h4>`
+    //        }
+    //    ).then(items=>{console.log(items);done(null, newUser)})
+    //} catch (error) {
+    //    console.log(error)
+    //}    
+    return done(null, newUser)
+}
+
+));
+
+passport.use('login', new LocalStrategy({passReqToCallback: true}, async (mail, password, done) => {
     //      TRAIGO EL USUARIO DESDE MONGO
+    console.log(mail)
+    console.log(password)
     const userData = await modelAuth.findOne({ mail, password: md5(password) })
     if (!userData) {
         // DONE ES EL CALLBACK
@@ -123,42 +156,8 @@ passport.use('login', new LocalStrategy(async (mail, password, done) => {
     }
     done(null, userData)
 }))
-// {passReqToCallback: true},
-passport.use('signin', new LocalStrategy( async (req, username, mail, password, direccion, direccionNum, edad, tel, url, done) => {
+// 
 
-    const userData = await modelAuth.findOne({ username, password: md5(toString(password)) })
-    if (userData) {
-        return done(null,false);
-    }
-    
-    const stageUser = new modelAuth({
-        nombre: toString(username),
-        email: toString(mail),
-        password: md5(toString(password)),
-        direccion: md5(toString(direccion)),
-        dirNum: md5(toString(direccionNum)),
-        edad: md5(toString(edad)),
-        tel: md5(toString(tel)),
-        url: md5(toString(url))
-    });
-    const newUser = await stageUser.save();
-    
-    try {
-        mail.sendMail(
-            {
-                from : 'Airsoft shop account',
-                to : toString(mail),
-                subject : 'Bienvenido/a a  Airsoft shop!',
-                html : `<h1>Hola!</h1><h2>Gracias por crearte una cuenta, te dejamos //los datos ingresados a continuacion:</h2><h3>Nombre: ${username}<///h3>Dirección: ${direccion}<h3>Edad: ${edad}</h3>Telefono de contacto: //${tel}<h3>Foto: ${url}</h3><h4>Gracias por elegirnos! </h4>`
-            }
-        ).then(items=>{console.log(items);done(null, newUser)})
-    } catch (error) {
-        console.log(error)
-    }    
-    done(null, newUser)
-}
-
-));
 
 passport.serializeUser((user, done)=>{
     done(null, user._id);
@@ -169,6 +168,12 @@ passport.deserializeUser(async (id, done)=>{
 })
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get('/logout',(req,res)=>{
+    req.logout(()=> {
+        res.redirect('/login');
+    })
+})
 /////////////////////
 
 module.exports = http;

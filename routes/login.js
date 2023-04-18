@@ -37,6 +37,7 @@ router.get('/', (req, res) => {
 router.post('/',passport.authenticate('login', {failureRedirect: '/errorLogin'}),async(req,res)=>{
     //const username = req.body.username
     //res.render('index.ejs',{username})
-    res.cookie("username",req.body.username,"mail",req.body.mail,{signed: true}).redirect('/home')
+    //res.cookie("username",req.body.username,"mail",req.body.mail,{signed: true}).
+    res.redirect('/home')
 })
 module.exports = router
