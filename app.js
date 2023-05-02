@@ -9,6 +9,7 @@ const login = require('./routes/login')
 const signIn = require('./routes/signIn')
 const errorSI = require('./routes/errorSignin');
 const errorLI = require('./routes/errorLogin');
+const carrito = require('./routes/kart')
 const home = require('./routes/home')
 const md5 = require('md5')
 const app = express()
@@ -19,13 +20,12 @@ const session = require('express-session');
 const COOKIE_SECRET = process.env.COOKIE_SECRET
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-//      Mongo
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const modelAuth = require('./src/Services/models/authModels')
-
 const mail = require('./src/Services/config/mail').transport
-
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser(COOKIE_SECRET))
 app.use(session({
     store: MongoStore.create({
@@ -35,12 +35,12 @@ app.use(session({
     {
     secret: COOKIE_SECRET,
     rolling: true,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
         httpOnly: false,
-        secure: false
-        //maxAge: 1000
+        secure: false,
+        maxAge: 1000
     }
     })}))
 
@@ -54,7 +54,7 @@ app.use('/login',login)
 app.use('/signin',signIn)
 app.use('/errorSignin',errorSI)
 app.use('/errorLogin',errorLI)
-
+app.use('/carrito',carrito)
 Prod = new ProdContainer()
 
 
@@ -78,32 +78,35 @@ app.get('/health', (_req,res) => {
 })
 
 app.get('/',(req,res)=>{
-    const username = req.signedCookies.username
-    if(req.signedCookies.username != undefined){
-        return res.render('index.ejs',{username})
-    }
-    req.session.destroy(error => {
-        if(!error){
-            
-            return res.redirect('/login')
-        }
-    })
+    //const username = req.signedCookies.username
+    //if(req.signedCookies.username != undefined){
+    //    return res.redirect('/home')
+    //}
+    //req.session.destroy(error => {
+    //    if(!error){
+    //        return res.redirect('/login')
+    //    }
+    //})
+    res.redirect('/home')
 })
 
-
-
 app.get('/signin',(req,res)=>{
-    // if con res.redirect.isAuth para proteger rutas
+    //if(req.session.isAuth){
+    //    res.redirect('/home')
+    //}
     res.redirect('/signin')
 })
 
+//app.post('/carrito/add',(req,res)=>res)
+
 app.get('/login',(req,res)=>{
-    // if con res.redirect.isAuth para proteger rutas
+    //if(req.session.isAuth){
+    //    res.redirect('/home')
+    //}
     res.redirect('/login')
 })
 
-
-////////////PASSPORT 
+// Authentication and login
 
 passport.use('signin', new LocalStrategy({passReqToCallback: true}, async (req, username, password, done) => {
     const userData = await modelAuth.findOne({username, password: md5(toString(password)) })
@@ -121,44 +124,18 @@ passport.use('signin', new LocalStrategy({passReqToCallback: true}, async (req, 
         tel: req.body.tel,
         url: req.body.url
     });
-    const newUser = await stageUser.save();
-    //  mail functionality
-    //try {
-    //    mail.sendMail(
-    //        {
-    //            from : 'Airsoft shop account',
-    //            to : toString(mail),
-    //            subject : 'Bienvenido/a a  Airsoft shop!',
-    //            html : `<h1>Hola!</h1><h2>Gracias por crearte una cuenta, te dejamos //los datos ingresados a continuacion:</h2><h3>Nombre: ${username}<///h3>Dirección: ${direccion}<h3>Edad: ${edad}</h3>Telefono de contacto: //${tel}<h3>Foto: ${url}</h3><h4>Gracias por elegirnos! </h4>`
-    //        }
-    //    ).then(items=>{console.log(items);done(null, newUser)})
-    //} catch (error) {
-    //    console.log(error)
-    //}    
+    const newUser = await stageUser.save();  
     return done(null, newUser)
 }
 
 ));
-
-passport.use('login', new LocalStrategy({passReqToCallback: true}, async (mail, password, done) => {
-    //      TRAIGO EL USUARIO DESDE MONGO
-    console.log(mail)
-    console.log(password)
-    const userData = await modelAuth.findOne({ mail, password: md5(password) })
+passport.use('login', new LocalStrategy(async (username, password, done) => {
+    const userData = await modelAuth.findOne({username ,password: md5(password)})
     if (!userData) {
-        // DONE ES EL CALLBACK
-        try {
-            return done(null, false);
-        } catch (error) {
-            console.log(error)
-        }
-        
+        return done(null, false);
     }
     done(null, userData)
 }))
-// 
-
-
 passport.serializeUser((user, done)=>{
     done(null, user._id);
 })
@@ -174,7 +151,6 @@ app.get('/logout',(req,res)=>{
         res.redirect('/login');
     })
 })
-/////////////////////
 
 module.exports = http;
 

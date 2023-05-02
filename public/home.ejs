@@ -30,28 +30,26 @@
                 No se encontraron productos.
             </div>
         <% } else{ %>
-
             <div class="card-group">
                     <% DataProds.forEach(item => { %>
-
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top" src=<%= item.url.toString() %> alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title"><%= item.title%> - US$<%= item.price%></h5>
                             <p class="card-text"><%= item.descripcion%></p>
 
-                            <form action="<%= item.title%>">
+                            <form action="/home/addToKart">
+                                <input type="text" name="product" value="<%= item.title%>" hidden>
+                                <input type="number" name="price" value="<%= item.price%>" hidden>
                                 <button type="submit" class="btn btn-success" formmethod="post">Agregar al carrito</button>
                             </form>
                         </div>
                     </div>
-
                     <% }); %>
             </div>
         <% }%>
     </div>
     <div>
-        
         <form action="<%=parseInt(pages)-1%>">
             <%if(parseInt(pages)!=0){%>
             <button  class="btn btn-warning" type="submit"  formmethod="get" >Anterior</button>
@@ -63,8 +61,6 @@
         <form action="<%=parseInt(pages)+1%>" >
             <button  class="btn btn-warning" type="submit" formmethod="get">Siguiente</button>
         </form>
-        
-        
     </div>
 </body>
 </html>
