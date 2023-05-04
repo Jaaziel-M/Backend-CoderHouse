@@ -21,42 +21,36 @@ router.use(passport.session());
 //    res.render('kart.ejs',{cart})
 //})
 //router.post('/mykart',(req,res)=>{
-    try {
-        mail.sendMail(
-            {
-                from : 'Airsoft shop account',
-                to : req.body.mail,
-                subject : 'Bienvenido/a a  Airsoft shop!',
-                html : `<h1>Gracias por tu compra!</h1><h2>A continuación, verás detallados los items elegidos!</h2><h3>${cart}</h3><h4>Gracias por elegirnos! </h4>`
-            }
-        )
-    } catch (error) {
-        console.log(error)
-    }
+    //try {
+    //    mail.sendMail(
+    //        {
+    //            from : 'Airsoft shop account',
+    //            to : req.body.mail,
+    //            subject : 'Bienvenido/a a  Airsoft shop!',
+    //            html : `<h1>Gracias por tu compra!</h1><h2>A continuación, verás detallados los items elegidos!</h2><h3>${cart}</h3><h4>Gracias por elegirnos! </h4>`
+    //        }
+    //    )
+    //} catch (error) {
+    //    console.log(error)
+    //}
     
 //})
-router.post("/addToKart",async(req,res)=>{
-    const username = req.signedCookies.username
-    const productToAdd = {
-        "product": req.body.product,
-        "price": req.body.price
-    }
-    
-    const results = await  kartModel.findOne({user: username})
-    
-    if (results == null){
-        const newKart = new kartModel({
-            user: username,
-            kart: [productToAdd]
-        });
-        const addkart = await newKart.save();  
-    }
-    else{
-        await kartModel.findOneAndUpdate({user: username},{$push:{products: productToAdd}})
-    }
-    //prodModel.findOneAndUpdate({username}, {$push: {"kart": {productToAdd}}})
-    res.send('<h1>Producto añadido</h1>')
-})
+
+//router.post('/',(req,res)=>{
+//    try {
+//        mail.sendMail(
+//            {
+//                from : 'Airsoft shop account',
+//                to : req.body.mail,
+//                subject : 'Bienvenido/a a  Airsoft shop!',
+//                html : `<h1>Gracias por tu compra!</h1><h2>A continuación, verás detallados los items elegidos!</h2><h3>${cart}</h3><h4>Gracias por elegirnos! </h4>`
+//            }
+//        )
+//    } catch (error) {
+//        console.log(error)
+//    }
+//    
+//})
 
 router.get('/',(req,res)=>{res.redirect('home/0')})
 router.get('/:id',  (req,res)=>{
