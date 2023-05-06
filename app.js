@@ -9,8 +9,9 @@ const login = require('./routes/login')
 const signIn = require('./routes/signIn')
 const errorSI = require('./routes/errorSignin');
 const errorLI = require('./routes/errorLogin');
-const carrito = require('./routes/kart')
-const home = require('./routes/home')
+const errorGeneric = require('./routes/errorGeneric');
+const carrito = require('./routes/kart');
+const productos = require('./routes/productos');
 const md5 = require('md5')
 const app = express()
 const http = new HttpServer(app); 
@@ -22,7 +23,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
-const modelAuth = require('./src/Services/models/authModels')
+const modelAuth = require('./src/Services/models/authModels');
+const authMw = require('./middlewares/authMw');
 const mail = require('./src/Services/config/mail').transport
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -49,11 +51,12 @@ app.set('view engine', 'ejs')
 let allmsgs = []
 let allprods = []
 app.use(express.static('public'))
-app.use('/home',home)
+app.use('/productos',productos)
 app.use('/login',login)
 app.use('/signin',signIn)
 app.use('/errorSignin',errorSI)
 app.use('/errorLogin',errorLI)
+app.use('/error',errorGeneric)
 app.use('/carrito',carrito)
 Prod = new ProdContainer()
 
@@ -77,32 +80,23 @@ app.get('/health', (_req,res) => {
     
 })
 
-app.get('/',(req,res)=>{
-    //const username = req.signedCookies.username
-    //if(req.signedCookies.username != undefined){
-    //    return res.redirect('/home')
-    //}
-    //req.session.destroy(error => {
-    //    if(!error){
-    //        return res.redirect('/login')
-    //    }
-    //})
-    res.redirect('/home')
+app.get('/', authMw, (req,res)=>{
+    res.redirect('/productos')
 })
 
 app.get('/signin',(req,res)=>{
-    //if(req.session.isAuth){
-    //    res.redirect('/home')
-    //}
+    if(req.session.isAuth){
+        res.redirect('/productos')
+    }
     res.redirect('/signin')
 })
 
 //app.post('/carrito/add',(req,res)=>res)
 
 app.get('/login',(req,res)=>{
-    //if(req.session.isAuth){
-    //    res.redirect('/home')
-    //}
+    if(req.isAuthenticated()){
+        res.redirect('/productos')
+    }
     res.redirect('/login')
 })
 

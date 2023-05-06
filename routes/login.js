@@ -21,6 +21,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', passport.authenticate('login', {failureRedirect: '/errorLogin'}), async(req,res)=>{
-    res.cookie('username',req.body.username,{ maxAge: 60000, signed: true }).redirect('home/0')
+    res.cookie('username',req.body.username,{ maxAge: 60000, signed: true }).redirect('productos/0')
 })
 module.exports = router
