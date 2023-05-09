@@ -12,6 +12,10 @@ const errorLI = require('./routes/errorLogin');
 const errorGeneric = require('./routes/errorGeneric');
 const carrito = require('./routes/kart');
 const productos = require('./routes/productos');
+const errorDB = require('./routes/errorDB');
+const chatContainer = require('./src/Containers/containerChat');
+const chat = require('./routes/chat');
+const Chat = new chatContainer();
 const md5 = require('md5')
 const app = express()
 const http = new HttpServer(app); 
@@ -47,29 +51,21 @@ app.use(session({
     })}))
 
 app.set('views', "./public");
-app.set('view engine', 'ejs')
-let allmsgs = []
-let allprods = []
-app.use(express.static('public'))
-app.use('/productos',productos)
-app.use('/login',login)
-app.use('/signin',signIn)
-app.use('/errorSignin',errorSI)
-app.use('/errorLogin',errorLI)
-app.use('/error',errorGeneric)
-app.use('/carrito',carrito)
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use('/productos',productos);
+app.use('/login',login);
+app.use('/signin',signIn);
+app.use('/errorSignin',errorSI);
+app.use('/errorLogin',errorLI);
+app.use('/error',errorGeneric);
+app.use('/carrito',carrito);
+app.use('/chat',chat);
+app.use('/errorDB',errorDB)
 Prod = new ProdContainer()
 
 
 
-//         HTTP METHODS 
-app.get('/errorSignin',(_req,res)=>{
-    res.redirect('/errorSignin')
-})
-
-app.get('/errorLogin',(_req,res)=>{
-    res.redirect('/errorLogin')
-})
 
 app.get('/health', (_req,res) => {
     mail()
@@ -80,24 +76,22 @@ app.get('/health', (_req,res) => {
     
 })
 
-app.get('/', authMw, (req,res)=>{
-    res.redirect('/productos')
-})
+// CHAT WEBSOCKET 
 
-app.get('/signin',(req,res)=>{
-    if(req.session.isAuth){
-        res.redirect('/productos')
-    }
-    res.redirect('/signin')
-})
+io.on('connection', socket => {
+    // SOCKETS BACK CHAT
 
-//app.post('/carrito/add',(req,res)=>res)
-
-app.get('/login',(req,res)=>{
-    if(req.isAuthenticated()){
-        res.redirect('/productos')
-    }
-    res.redirect('/login')
+    Chat.getAllMsg().then(data => {
+        socket.emit('UPDATE_FROM_USR', data)
+    })
+    
+    socket.on('NEW_MSG_USR', dataChatFromFront => {
+        Chat.addMsg(dataChatFromFront).then(data => {
+            Chat.getAllMsg().then(data => {
+                io.sockets.emit('NEW_MSG_FROM_BACK',data)
+            })
+        })
+    })
 })
 
 // Authentication and login

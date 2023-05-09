@@ -12,15 +12,19 @@ router.use(cookieParser(COOKIE_SECRET))
 connect()
 router.use(express.json())
 router.use(express.urlencoded({extended:true}))
+router.use(passport.session());
 require('dotenv').config();
 
 
 router.get('/',(req,res)=>{
-    res.render('signIn.ejs')
-});
+    if(req.isAuthenticated()){
+        res.redirect('/productos')
+    }
+    res.render('signin.ejs')
+})
 
 router.post('/',passport.authenticate('signin',{failureRedirect: '/errorSignin'}),async (req,res)=>{
-    res.cookie("username",req.body.username,"mail",req.body.mail,{signed: true}).redirect('productos/0')
+    res.cookie('username',req.body.username,{ maxAge: 60000, signed: true }).redirect('/productos')
     
 })
 
