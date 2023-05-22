@@ -13,6 +13,26 @@ const authSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    direccion: {
+        type: String,
+        required: true
+    },
+    dirNum: {
+        type: String,
+        required: true
+    },
+    edad: {
+        type: String,
+        required: true
+    },
+    tel: {
+        type: String,
+        required: true
+    },
+    url: {
+        type: String,
+        required: false
     }
 })
 

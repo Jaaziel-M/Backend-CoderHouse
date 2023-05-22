@@ -3,58 +3,29 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const connect = require('../src/Services/config/connect')
 const modelAuth = require('../src/Services/models/authModels')
-
+const passport = require('passport');
 const md5 = require('md5')
+const cookieParser = require('cookie-parser')
+const COOKIE_SECRET = process.env.COOKIE_SECRET
+
+router.use(cookieParser(COOKIE_SECRET))
 connect()
 router.use(express.json())
 router.use(express.urlencoded({extended:true}))
+router.use(passport.session());
 require('dotenv').config();
 
 
 router.get('/',(req,res)=>{
-    res.render('signIn.ejs')
+    if(req.isAuthenticated()){
+        res.redirect('/productos')
+    }
+    res.render('signin.ejs')
+})
 
-});
-
-//router.post('/',async (req,res)=>{
-//    //res.cookie('username',req.body.username,{ maxAge: 60000, signed: true }).redirect('/')
-//    const {username, mail, password} = req.body
-//
-//    try {
-//        if(username != undefined && mail != undefined && password != undefined && username != "" && mail != "" && password != ""){
-//            const result = await modelAuth.find({email:mail, password:md5(password)})
-//            
-//            if(JSON.stringify(result) != "[]"){
-//                console.log(result)
-//                return res.render('errorSignIn.ejs')
-//            }
-//            const data = {
-//                nombre: username,
-//                email: mail,
-//                password: md5(password)
-//            }
-//            
-//            const model = new modelAuth(data);
-//            
-//            await model.save();
-//            console.log(req.body)
-//            return res.json({
-//                "usuario": username,
-//                "email": mail,
-//                "contraseña": password
-//            })
-//        }
-//        res.render('errorSignIn.ejs')
-//    } catch (error) {
-//        console.log(error)
-//    }
-//
-//});
-
-
-router.post('/',passport.authentication('signup',{failureRedirect: '/error'}),async (req,res)=>{
-    console.log(req.user);
-    res.render('index.ejs',{username})
+router.post('/',passport.authenticate('signin',{failureRedirect: '/errorSignin'}),async (req,res)=>{
+    res.cookie('username',req.body.username,{ maxAge: 60000, signed: true }).redirect('/productos')
+    
 })
 
 

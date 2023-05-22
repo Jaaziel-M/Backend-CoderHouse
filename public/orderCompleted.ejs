@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body class="container text-center text-dark bg-primary">
+    <h1>Gracias por tu compra!!</h1>
+    <h2>Compraste los siguientes items: </h2>
+    <ul style="list-style-type:none">
+        <% cart.forEach(item => { %>
+
+            <li>
+                <div>
+                    <%= item.product %>
+                    <p>US$ <%= item.price %></p>
+                </div>
+                
+            </li>
+
+        <% }); %>
+
+        <% if(errorCart.length != 0){  %>
+            <h3>Lo sentimos, pero de los siguientes productos, no poseemos stock :C</h3>
+            <% errorCart.forEach(item => { %>
+
+                <li>
+                    <div>
+                        <%= item.product %>
+                        <p>US$ <%= item.price %></p>
+                    </div>
+                    
+                </li>
+    
+            <% }); %>
+        <% }%>
+
+    </ul>
+    
+
+    <div>
+        <form action="/productos"><button class="btn btn-dark">Volver</button></form>
+    </div>
+</body>
+</html>

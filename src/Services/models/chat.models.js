@@ -1,27 +1,24 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const productsSchema = new Schema({
-    title: {
+const chatSchema = new Schema({
+    email: {
         type: String,
         required: true
     },
-    price: {
-        type: Number,
-        required: true
-    },
-    url: {
+    tipo: {
         type: String,
         required: true
     },
-    stock: {
-        type: Number,
+    timestamp: {
+        type: String,
         required: true
     },
-    descripcion: {
+    mensaje: {
         type: String,
         required: true
     }
+
 })
 
-module.exports = mongoose.model('productos', productsSchema)
+module.exports = mongoose.model('mensajes', chatSchema)

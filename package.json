@@ -29,19 +29,19 @@
     "faker": "^5.5.3",
     "fetch": "^1.1.0",
     "md5": "^2.3.0",
-    "mongoose": "^6.8.0",
+    "mocha": "^10.2.0",
+    "mongoose": "^6.10.2",
     "morgan": "^1.10.0",
-    "node": "^19.0.0",
-    "nodemon": "^2.0.20",
+    "node": "^19.6.1",
+    "nodemailer": "^6.9.1",
+    "nodemon": "^2.0.21",
     "normalizr": "^3.6.2",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pino": "^8.10.0",
-    "pm2": "^5.2.2",
     "session-file-store": "^1.5.0",
-    "socket.io": "^4.5.3",
+    "socket.io": "^4.6.1",
+    "twilio": "^4.8.0",
     "utils": "^0.2.2",
-    "uuid": "^9.0.0",
-    "yargs": "^17.6.2"
+    "uuid": "^9.0.0"
   }
 }
