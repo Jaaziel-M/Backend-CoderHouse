@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body class="container text-center text-dark bg-secondary">
+    
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src=<%= DataProd.url.toString() %> alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title"><%= DataProd.title%> - US$<%= DataProd.price%></h5>
+            <p class="card-text"><%= DataProd.descripcion%></p>
+            <p class="card-text">Stock disponible: <%= DataProd.stock%></p>
+            <form action="/carrito/addToKart">
+                <input type="text" name="product" value="<%= DataProd.title%>" hidden>
+                <input type="number" name="price" value="<%= DataProd.price%>" hidden>
+                <button type="submit" class="btn btn-success" formmethod="post">Agregar al carrito</button>
+            </form>
+            <form action="/productos">
+                <button type="submit" class="btn btn-primary" formmethod="get">Home</button>
+            </form>
+            <% if(username == "administrator"){  %>
+            <form action="/productos/item/<%= DataProd.id %>">
+                
+                <div>
+                    <label for="title">Titulo: </label>
+                    <input type="text" name="title" required>
+                    <label for="title">Precio: </label>
+                    <input type="number" name="price" required>
+                    <label for="title">url: </label>
+                    <input type="text" name="url" required>
+                    <label for="title">stock: </label>
+                    <input type="text" name="stock" required>
+                    <label for="title">descripcion: </label>
+                    <input type="text" name="descripcion" required>
+                </div>
+                <button type="submit" class="btn btn-dark" formmethod="post">guardar cambios</button>
+            </form>
+            <% } %>
+        </div>
+    </div>
+
+</body>
+</html>
